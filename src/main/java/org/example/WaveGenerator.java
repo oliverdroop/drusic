@@ -23,7 +23,7 @@ public class WaveGenerator {
     }
 
     public static float[] generateSamples(Note note, double bpm, double sampleRate) {
-        return generateSamples(note.getEndBeat() - note.getStartBeat(), bpm, sampleRate, note.getFrequency(),
+        return generateSamples(note.getEndBeat() - note.getStartBeat(), bpm, sampleRate, note.getPitch().freq(),
                 note.getAmplitude(), note.getWaveform());
     }
 

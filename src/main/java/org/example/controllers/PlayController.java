@@ -7,9 +7,7 @@ import org.example.services.NoteService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -34,8 +32,9 @@ public class PlayController {
     private AudioFormat format = new AudioFormat((float)sampleRate, bits, channels, signed, bigEndian);
 
     @CrossOrigin(value = "http://localhost:3000")
-    @GetMapping(value = "/playAll")
-    public ResponseEntity<StreamingResponseBody> playAll() throws LineUnavailableException, IOException {
+    @GetMapping(value = "/playAll/{timeMillis}")
+    public ResponseEntity<StreamingResponseBody> playAll(@PathVariable String timeMillis) throws LineUnavailableException, IOException {
+        System.out.println(String.format("Handling playAll with timestamp %s", timeMillis));
         byte[] byteBuffer = WaveGenerator.convertNotesToBytes(noteService.getNotes(), bpm, sampleRate, bits);
 
         int streamLength = byteBuffer.length / (bits / 8);

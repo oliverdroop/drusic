@@ -1,6 +1,51 @@
 package org.example;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+@Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@NoArgsConstructor(force = true)
 public enum Pitch {
+    CN_1(1, 1),
+    CS_1(1, 2),
+    DF_1(1, 2),
+    DN_1(1, 3),
+    DS_1(1, 4),
+    EF_1(1, 4),
+    EN_1(1, 5),
+    FN_1(1, 6),
+    FS_1(1, 7),
+    GF_1(1, 7),
+    GN_1(1, 8),
+    GS_1(1, 9),
+    AF_1(1, 9),
+    AN_1(1, 10),
+    AS_1(1, 11),
+    BF_1(1, 11),
+    BN_1(1, 12),
+    CN_2(2, 1),
+    CS_2(2, 2),
+    DF_2(2, 2),
+    DN_2(2, 3),
+    DS_2(2, 4),
+    EF_2(2, 4),
+    EN_2(2, 5),
+    FN_2(2, 6),
+    FS_2(2, 7),
+    GF_2(2, 7),
+    GN_2(2, 8),
+    GS_2(2, 9),
+    AF_2(2, 9),
     AN_2(2, 10),
     AS_2(2, 11),
     BF_2(2, 11),
@@ -53,14 +98,36 @@ public enum Pitch {
     GS_5(5, 9),
     AF_5(5, 9),
     AN_5(5, 10);
-    private int octaveNumber;
-    private int semitoneNumber;
+
+    @JsonIgnore private final int octaveNumber;
+    @JsonIgnore private final int semitoneNumber;
+    private final int number;
+
     Pitch(int octaveNumber, int semitoneNumber) {
         this.octaveNumber = octaveNumber;
         this.semitoneNumber = semitoneNumber;
+        this.number = octaveNumber * 12 + semitoneNumber - 9;
     }
 
     public double freq() {
         return Math.pow(Math.pow(2, (1 / (double)12)), octaveNumber * 12 + semitoneNumber - 58) * 440;
+    }
+
+    public static class PitchDeserializer extends StdDeserializer<Pitch> {
+
+        public PitchDeserializer() {
+            this(null);
+        }
+
+        public PitchDeserializer(Class<?> clazz) {
+            super(clazz);
+        }
+
+        @Override
+        public Pitch deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+            int number = node.get("number").asInt();
+            return Arrays.stream(Pitch.values()).filter(pitch -> pitch.getNumber() == number).findFirst().get();
+        }
     }
 }
