@@ -8,6 +8,7 @@ import org.example.services.NoteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +39,14 @@ public class NoteController {
     public ResponseEntity<List<Note>> postNote(@RequestBody String requestBody) throws JsonProcessingException {
         Note note = objectMapper.readValue(requestBody, Note.class);
         noteService.addNote(note);
+
+        return ResponseEntity.ok(noteService.getNotes());
+    }
+
+    @DeleteMapping(value = "/notes")
+    public ResponseEntity<List<Note>> deleteNotes(@RequestBody String requestBody) throws JsonProcessingException {
+        Note[] note = objectMapper.readValue(requestBody, Note[].class);
+        noteService.removeNotes(Arrays.asList(note));
 
         return ResponseEntity.ok(noteService.getNotes());
     }

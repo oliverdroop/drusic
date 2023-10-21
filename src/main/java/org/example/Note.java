@@ -1,15 +1,13 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Note {
     private final double startBeat;
     private final double endBeat;

@@ -27,6 +27,10 @@ public class NoteService {
         notes.remove(note);
     }
 
+    public void removeNotes(List<Note> notesToRemove) {
+        notes.removeAll(notesToRemove);
+    }
+
 //    @PostConstruct
     private void createSampleNotes() {
         final double amplitude = 0.5;

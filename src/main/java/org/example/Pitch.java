@@ -97,7 +97,45 @@ public enum Pitch {
     GN_5(5, 8),
     GS_5(5, 9),
     AF_5(5, 9),
-    AN_5(5, 10);
+    AN_5(5, 10),
+    AS_5(5, 11),
+    BF_5(5, 11),
+    BN_5(5, 12),
+    CN_6(6, 1),
+    CS_6(6, 2),
+    DF_6(6, 2),
+    DN_6(6, 3),
+    DS_6(6, 4),
+    EF_6(6, 4),
+    EN_6(6, 5),
+    FN_6(6, 6),
+    FS_6(6, 7),
+    GF_6(6, 7),
+    GN_6(6, 8),
+    GS_6(6, 9),
+    AF_6(6, 9),
+    AN_6(6, 10),
+    AS_6(6, 11),
+    BF_6(6, 11),
+    BN_6(6, 12),
+    CN_7(7, 1),
+    CS_7(7, 2),
+    DF_7(7, 2),
+    DN_7(7, 3),
+    DS_7(7, 4),
+    EF_7(7, 4),
+    EN_7(7, 5),
+    FN_7(7, 6),
+    FS_7(7, 7),
+    GF_7(7, 7),
+    GN_7(7, 8),
+    GS_7(7, 9),
+    AF_7(7, 9),
+    AN_7(7, 10),
+    AS_7(7, 11),
+    BF_7(7, 11),
+    BN_7(7, 12),
+    CN_8(8, 1),;
 
     @JsonIgnore private final int octaveNumber;
     @JsonIgnore private final int semitoneNumber;
@@ -127,7 +165,10 @@ public enum Pitch {
         public Pitch deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             int number = node.get("number").asInt();
-            return Arrays.stream(Pitch.values()).filter(pitch -> pitch.getNumber() == number).findFirst().get();
+            return Arrays.stream(Pitch.values())
+                    .filter(pitch -> pitch.getNumber() == number)
+                    .findFirst()
+                    .orElse(Pitch.AN_4);
         }
     }
 }
