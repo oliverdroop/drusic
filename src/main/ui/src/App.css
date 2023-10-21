@@ -1,0 +1,81 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.NoteCollection {
+  position: relative;
+  background-color: #333333;
+  color: #FFFFFF;
+  width: 90%;
+  height: 90vh;
+  user-select: none;
+}
+
+.NoteDiv {
+  position: absolute;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  font-size: 8px;
+  text-align: left;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.selected {
+  background-color: #FF7F00;
+}
+
+.eResize {
+  background-color: #FFFF00;
+  z-index: 1;
+  cursor: e-resize;
+}
+
+.DragBox {
+  position: absolute;
+  z-index: 2;
+  border: 1px solid #FFFFFF;
+  width: 10%;
+  height: 10vh;
+  cursor: grabbing;
+}
+
+.AudioPlayer {
+  position: relative;
+  background-color: green;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  text-align: center;
+  user-select: none;
+}
+
+.hl {
+  position: absolute;
+  color: #444444;
+  background-color: #444444;
+  height: 1px;
+  width: 100%;
+  z-index: 0;
+}
+
+.vl {
+  position: absolute;
+  height: 90vh;
+  z-index: 0;
+}
