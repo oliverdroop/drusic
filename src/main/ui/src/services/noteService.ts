@@ -1,4 +1,4 @@
-import { Note } from "../components/NoteCollection"
+import { Note } from "../components/NotePanel"
 
 export async function getNotes(): Promise<Note[]> {
   const response = await fetch("http://localhost:8080/notes")

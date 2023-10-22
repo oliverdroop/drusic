@@ -45,8 +45,8 @@ public class NoteController {
 
     @DeleteMapping(value = "/notes")
     public ResponseEntity<List<Note>> deleteNotes(@RequestBody String requestBody) throws JsonProcessingException {
-        Note[] note = objectMapper.readValue(requestBody, Note[].class);
-        noteService.removeNotes(Arrays.asList(note));
+        Note[] notes = objectMapper.readValue(requestBody, Note[].class);
+        noteService.removeNotes(Arrays.asList(notes));
 
         return ResponseEntity.ok(noteService.getNotes());
     }

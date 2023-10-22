@@ -17,7 +17,7 @@
   color: #61dafb;
 }
 
-.NoteCollection {
+.NotePanel {
   position: relative;
   background-color: #333333;
   color: #FFFFFF;
@@ -38,6 +38,7 @@
 
 .selected {
   background-color: #FF7F00;
+  z-index: 2;
 }
 
 .eResize {

@@ -4,7 +4,7 @@ export interface NoteSnapGridProps {
 }
 
 const NoteSnapGrid = ({getPitchNumber}: NoteSnapGridProps) => {
-  const id = "notecollection";
+  const id = "notePanel";
   const xFactor = 40;
   const yFactor = 10;
 

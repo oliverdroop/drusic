@@ -1,4 +1,4 @@
-import { Note } from "./NoteCollection";
+import { Note } from "./NotePanel";
 
 export interface NoteDivProps {
   note: Note

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import NoteDiv from './NoteDiv';
+import NoteDiv from './NoteDiv.tsx';
 import { getNotes, postNote, postNotes, deleteNotes } from '../services/noteService.ts';
 import NoteSnapGrid from './NoteSnapGrid.tsx';
 
@@ -16,15 +16,19 @@ export interface Note {
   waveform: string
 }
 
-const NoteCollection = () => {
-  const id = "notecollection";
+export interface NotePanelProps {
+  keysPressed: String[]
+}
+
+const NotePanel = ({keysPressed}: NotePanelProps) => {
+  const id = "notePanel";
   const xFactor = 40;
   const yFactor = 10;
   const yOffset = 880;
   const timeSnap = 0.5;
-  const noteCollection = document.getElementById(id);
-  const offsetLeft = noteCollection?.offsetLeft ?? 0;
-  const offsetTop = noteCollection?.offsetTop ?? 0;
+  const notePanel = document.getElementById(id);
+  const offsetLeft = notePanel?.offsetLeft ?? 0;
+  const offsetTop = notePanel?.offsetTop ?? 0;
 
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
@@ -34,6 +38,7 @@ const NoteCollection = () => {
   const [notes, setNotes] = useState([] as Note[]);
   const [grabbedNotes, setGrabbedNotes] = useState([] as Note[]);
   const [selectedNotes, setSelectedNotes] = useState([] as Note[]);
+  const [clipboardNotes, setClipboardNotes] = useState([] as Note[]);
   const [isResizeNote, setIsResizeNote] = useState(false);
 
   useEffect(() => {
@@ -44,7 +49,7 @@ const NoteCollection = () => {
     rootElement?.addEventListener("contextmenu", handleContextMenu);
 
     getNotes().then(response => setNotes(response));
-    }, []);
+  }, []);
 
   const onMouseMove = (event: any) => {
     setMouseX(event.clientX);
@@ -81,17 +86,7 @@ const NoteCollection = () => {
           postNotes(notes).then(response => {
             setNotes(response);
             // Update selected notes
-            setSelectedNotes(response
-              .filter(newNote => selectedNotes
-                .find(oldNote => 
-                  oldNote.amplitude === newNote.amplitude
-                  && oldNote.pitch.number === newNote.pitch.number
-                  && oldNote.startBeat === newNote.startBeat
-                  && oldNote.endBeat === newNote.endBeat
-                  && oldNote.waveform === newNote.waveform
-                )
-              )
-            );
+            reselectNotes(response, selectedNotes);
           });
         }
       } else if (mouseDownButton === 2) {
@@ -118,7 +113,6 @@ const NoteCollection = () => {
       const endBeat = getBeatNumber(Math.max(mouseDownX, mouseX) - offsetLeft);
       const pitchHigh = getPitchNumber(Math.min(mouseDownY, mouseY) - offsetTop);
       const pitchLow = getPitchNumber(Math.max(mouseDownY, mouseY) - offsetTop);
-      console.log("startBeat: %s endBeat: %s pitchHigh: %s pitchLow: %s", startBeat, endBeat, pitchHigh, pitchLow);
       const newNoteSelection = notes.filter(note => 
         note.endBeat > startBeat 
         && note.startBeat <= endBeat 
@@ -132,6 +126,60 @@ const NoteCollection = () => {
     setMouseDownY(0);
     setMouseDownButton(-1);
   };
+
+  const reselectNotes = (availableNotes: Note[], previousSelection: Note[]) => {
+    // Update selected notes
+    setSelectedNotes(availableNotes
+      .filter(newNote => previousSelection
+        .find(oldNote => 
+          oldNote.amplitude === newNote.amplitude
+          && oldNote.pitch.number === newNote.pitch.number
+          && oldNote.startBeat === newNote.startBeat
+          && oldNote.endBeat === newNote.endBeat
+          && oldNote.waveform === newNote.waveform
+        )
+      )
+    );
+  };
+
+  useEffect(() => {
+    const copyNotes = () => {
+      setClipboardNotes(selectedNotes.slice());
+    };
+
+    const pasteNotes = () => {
+      const timeOffset = clipboardNotes.map(note => note.startBeat).reduce((beat1, beat2) => Math.min(beat1, beat2));
+      const pitchOffset = getPitchNumber(0) - clipboardNotes.map(note => note.pitch.number).reduce((pitch1, pitch2) => Math.max(pitch1, pitch2));
+      const existingNotes = notes.slice();
+      const clipboardNotesCopy = [] as Note[];
+      clipboardNotes.forEach(note => {
+        const newNote = {
+          startBeat: note.startBeat - timeOffset,
+          endBeat: note.endBeat - timeOffset,
+          pitch: {
+            number: note.pitch.number + pitchOffset,
+            frequency: 440
+          },
+          amplitude: note.amplitude,
+          waveform: note.waveform
+        } as Note;
+        existingNotes.push(newNote);
+        clipboardNotesCopy.push(newNote);
+      });
+      postNotes(existingNotes).then(response => {
+        setNotes(response); 
+        reselectNotes(response, clipboardNotesCopy);
+      });
+    }; 
+
+    if (keysPressed.includes("Control")) {
+      if (keysPressed.includes("c")) {
+        copyNotes();
+      } else if (keysPressed.includes("v")) {
+        pasteNotes();
+      }
+    }
+  }, [keysPressed, clipboardNotes, selectedNotes, notes]);
 
   const getBeatNumber = (posX: number) => {
     return timeSnap * Math.floor(posX / (xFactor * timeSnap));
@@ -173,7 +221,13 @@ const NoteCollection = () => {
   };
 
   return (
-    <div id={id} className="NoteCollection" onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
+    <div
+      id={id}
+      className="NotePanel"
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+    >
       {notes !== undefined && notes.map((note, i) => 
         <NoteDiv 
           key={`note_${i}`}
@@ -235,4 +289,4 @@ const NoteCollection = () => {
     </div>
   )};
 
-export default NoteCollection;
+export default NotePanel;
