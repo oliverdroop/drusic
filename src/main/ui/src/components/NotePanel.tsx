@@ -18,9 +18,11 @@ export interface Note {
 
 export interface NotePanelProps {
   keysPressed: String[]
+  notes: Note[]
+  setNotes(notes: Note[]): void
 }
 
-const NotePanel = ({keysPressed}: NotePanelProps) => {
+const NotePanel = ({keysPressed, notes, setNotes}: NotePanelProps) => {
   const id = "notePanel";
   const xFactor = 40;
   const yFactor = 10;
@@ -35,7 +37,6 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
   const [mouseDownButton, setMouseDownButton] = useState(-1);
   const [mouseDownX, setMouseDownX] = useState(0);
   const [mouseDownY, setMouseDownY] = useState(0);
-  const [notes, setNotes] = useState([] as Note[]);
   const [grabbedNotes, setGrabbedNotes] = useState([] as Note[]);
   const [selectedNotes, setSelectedNotes] = useState([] as Note[]);
   const [clipboardNotes, setClipboardNotes] = useState([] as Note[]);

@@ -34,7 +34,7 @@ public class PlayController {
     @CrossOrigin(value = "http://localhost:3000")
     @GetMapping(value = "/playAll/{timeMillis}")
     public ResponseEntity<StreamingResponseBody> playAll(@PathVariable String timeMillis) throws LineUnavailableException, IOException {
-        System.out.println(String.format("Handling playAll with timestamp %s", timeMillis));
+        System.out.printf("Handling playAll with timestamp %s\n", timeMillis);
         byte[] byteBuffer = WaveGenerator.convertNotesToBytes(noteService.getNotes(), bpm, sampleRate, bits);
 
         int streamLength = byteBuffer.length / (bits / 8);

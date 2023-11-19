@@ -10,6 +10,7 @@
     "@types/node": "^16.18.50",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "file-saver": "^2.0.5",
     "react": "^18.2.0",
     "react-audio-player": "^0.17.0",
     "react-bootstrap": "^2.8.0",
@@ -41,5 +42,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7"
   }
 }

@@ -80,3 +80,8 @@
   height: 90vh;
   z-index: 0;
 }
+
+.ButtonPanel {
+  display: inline-flex;
+  column-gap: 10%;
+}

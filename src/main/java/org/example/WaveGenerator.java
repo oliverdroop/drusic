@@ -43,7 +43,6 @@ public class WaveGenerator {
             byteBuffer[i++] = (byte)x;
             byteBuffer[i] = (byte)(x >>> 8);
         }
-
         return byteBuffer;
     }
 
@@ -63,11 +62,8 @@ public class WaveGenerator {
                 samples[i + startIndex] += noteSamples[i];
             }
         }
-        // Create sample buffer for the whole length of the track
-        float maxWaveformValue = getMaximumSampleValue(samples);
-
         // Reduce each sample so that clipping can be avoided
-        reduceSamples(samples, maxWaveformValue);
+        reduceSamples(samples);
 
         // Create byte buffer for the whole length of the track
         return convertSamplesToBytes(samples, bits);
@@ -78,16 +74,21 @@ public class WaveGenerator {
     }
 
     private static float getMaximumSampleValue(float[] unclippedSamples) {
-        return (float) IntStream
+        double maximumSampleValue = IntStream
                 .range(0, unclippedSamples.length)
                 .mapToDouble(i -> unclippedSamples[i])
                 .map(Math::abs)
                 .max()
                 .orElse(0);
+
+        if (maximumSampleValue == 0) {
+            throw new RuntimeException("Maximum sample value is 0");
+        }
+        return (float) maximumSampleValue;
     }
 
-    private static void reduceSamples(float[] samples, float maxWaveformValue) {
-        float reductionFactor = 1 / maxWaveformValue;
+    private static void reduceSamples(float[] samples) {
+        float reductionFactor = 1 / getMaximumSampleValue(samples);
         for(int i = 0; i < samples.length; i++) {
             samples[i] = samples[i] * reductionFactor;
         }
