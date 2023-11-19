@@ -50,21 +50,21 @@ public class WaveGenerator {
     public static byte[] convertNotesToBytes(Collection<Note> notes, double bpm, double sampleRate, int bits) {
         // Find end
         double endBeat = notes.stream().map(Note::getEndBeat).reduce(Math::max).orElse(0.0);
-        Map<Integer, Collection<Float>> sampleMap = new HashMap<>();
+
+        // Find the number of samples over the whole length of the track
+        int sampleCount = getSampleIndexFromBeat(endBeat, bpm, sampleRate);
+        float[] samples = new float[sampleCount];
+
         // Load notes into byte buffer
         for(Note note : notes) {
             float[] noteSamples = generateSamples(note, bpm, sampleRate);
-            int startIndex = (int)Math.round((note.getStartBeat() / bpm) * 60 * sampleRate);
+            int startIndex = getSampleIndexFromBeat(note.getStartBeat(), bpm, sampleRate);
             for(int i = 0; i < noteSamples.length; i++) {
-                int sampleMapIndex = i + startIndex;
-                sampleMap.putIfAbsent(sampleMapIndex, new LinkedList<>());
-                sampleMap.get(sampleMapIndex).add(noteSamples[i]);
+                samples[i + startIndex] += noteSamples[i];
             }
         }
         // Create sample buffer for the whole length of the track
-        int sampleCount = (int) Math.round((endBeat / bpm) * 60 * sampleRate);
-        float[] samples = new float[sampleCount];
-        float maxWaveformValue = combineNoteSamplesAndReturnMaximum(sampleMap, samples);
+        float maxWaveformValue = getMaximumSampleValue(samples);
 
         // Reduce each sample so that clipping can be avoided
         reduceSamples(samples, maxWaveformValue);
@@ -73,19 +73,17 @@ public class WaveGenerator {
         return convertSamplesToBytes(samples, bits);
     }
 
-    private static float combineNoteSamplesAndReturnMaximum(Map<Integer, Collection<Float>> sampleMap, float[] unclippedSamples) {
-        float maxWaveformValue = 0;
-        for(int i = 0; i < unclippedSamples.length; i++) {
-            Collection<Float> sampleCollectionAtIndex = sampleMap.get(i);
-            if (sampleCollectionAtIndex != null) {
-                // Get the total sample value at this index
-                float waveformValue = sampleCollectionAtIndex.stream().reduce(simpleFloatCombinator()).orElse(0f);
-                unclippedSamples[i] = waveformValue;
-                // Find the max waveform value for later reduction
-                maxWaveformValue = Math.max(Math.abs(waveformValue), maxWaveformValue);
-            }
-        }
-        return maxWaveformValue;
+    private static int getSampleIndexFromBeat(double beat, double bpm, double sampleRate) {
+        return (int) Math.round((beat / bpm) * 60 * sampleRate);
+    }
+
+    private static float getMaximumSampleValue(float[] unclippedSamples) {
+        return (float) IntStream
+                .range(0, unclippedSamples.length)
+                .mapToDouble(i -> unclippedSamples[i])
+                .map(Math::abs)
+                .max()
+                .orElse(0);
     }
 
     private static void reduceSamples(float[] samples, float maxWaveformValue) {
@@ -93,21 +91,5 @@ public class WaveGenerator {
         for(int i = 0; i < samples.length; i++) {
             samples[i] = samples[i] * reductionFactor;
         }
-    }
-
-    private static BinaryOperator<Float> simpleFloatCombinator() {
-        return Float::sum;
-    }
-
-    private static BinaryOperator<Float> clippingFloatCombinator() {
-        return (float1, float2) -> {
-            float combined = float1 + float2;
-            if (combined > 1) {
-                return 1f;
-            } else if (combined < -1) {
-                return -1f;
-            }
-            return combined;
-        };
     }
 }
