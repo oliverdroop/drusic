@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
 import { postNotes } from './services/noteService';
+import { json } from 'stream/consumers';
 
 interface Track {
   notes: Note[]
@@ -66,8 +67,10 @@ function App() {
           <Button onClick={() => save()}>
             Save
           </Button>
-
-          <input type="file" onChange={load}/>
+          <Button onClick={() => document.getElementById("upload_input")?.click()}>
+            <input id="upload_input" type="file" onChange={load} accept=".json"/>
+            Load
+          </Button>
         </div>
         <NotePanel
           keysPressed={keysPressed}
