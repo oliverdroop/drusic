@@ -40,6 +40,9 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
   const [selectedNotes, setSelectedNotes] = useState([] as Note[]);
   const [clipboardNotes, setClipboardNotes] = useState([] as Note[]);
   const [isResizeNote, setIsResizeNote] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
+  const [isPasting, setIsPasting] = useState(false);
+
 
   useEffect(() => {
     const handleContextMenu = (event: any) => {
@@ -104,7 +107,7 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
         endBeat: endBeat,
         amplitude: 0.5,
         pitch: { number: pitchNumber } as Pitch,
-        waveform: "SINE"}
+        waveform: "SQUARE"}
       postNote(newNote).then(response => setNotes(response));
       setSelectedNotes([]);
     } else {
@@ -148,6 +151,9 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
     };
 
     const pasteNotes = () => {
+      if (clipboardNotes.length == 0) {
+        return;
+      }
       const timeOffset = clipboardNotes.map(note => note.startBeat).reduce((beat1, beat2) => Math.min(beat1, beat2));
       const pitchOffset = getPitchNumber(0) - clipboardNotes.map(note => note.pitch.number).reduce((pitch1, pitch2) => Math.max(pitch1, pitch2));
       const existingNotes = notes.slice();
@@ -173,11 +179,18 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
     }; 
 
     if (keysPressed.includes("Control")) {
-      if (keysPressed.includes("c")) {
+      if (keysPressed.includes("c") && !isCopying) {
+        setIsCopying(true);
+        setIsPasting(false);
         copyNotes();
-      } else if (keysPressed.includes("v")) {
+      } else if (keysPressed.includes("v") && !isPasting) {
+        setIsPasting(true);
+        setIsCopying(false);
         pasteNotes();
       }
+    } else {
+      setIsCopying(false);
+      setIsPasting(false);
     }
   }, [keysPressed, clipboardNotes, selectedNotes, notes]);
 
@@ -246,9 +259,10 @@ const NotePanel = ({keysPressed}: NotePanelProps) => {
 
       {/* Show the change for grabbed note(s) while the mouse is clicked */}
       {grabbedNotes.length > 0 && mouseDownButton === 0 && (
-        grabbedNotes.map(grabbedNote =>
+        grabbedNotes.map((grabbedNote, i) =>
           <div
             className='DragBox'
+            key={`drag_box_${i}`}
             style={{
               top: `${yOffset - ((grabbedNote.pitch.number + calculatePitchChange()) * yFactor)}px`,
               left: `${(grabbedNote.startBeat + (isResizeNote ? 0 : calculateTimeChange())) * xFactor}px`,
