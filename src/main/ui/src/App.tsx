@@ -2,12 +2,10 @@ import './App.css';
 import NotePanel, { Note } from './components/NotePanel';
 import AudioPlayer from './components/AudioPlayer';
 import { useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { saveAs } from 'file-saver';
-import { postNotes } from './services/noteService';
-import { json } from 'stream/consumers';
+import LoadButton from './components/LoadButton';
+import SaveButton from './components/SaveButton';
 
-interface Track {
+export interface Track {
   notes: Note[]
 }
 
@@ -34,26 +32,6 @@ function App() {
     setKeysPressed(newKeysPressed);
   }
 
-  const save = () => {
-    const track = {} as Track;
-    track.notes = notes;
-
-    const output = JSON.stringify(track, null, 2);
-    const file = new Blob([output], { type: 'text/plain;charset=utf-8' });
-    saveAs(file, "myTrack.json");
-  };
-
-  const load = (e: any) => {
-    const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
-    fileReader.onload = e => {
-      if (e.target && e.target.result) {
-        const track = JSON.parse(e.target.result?.toString()) as Track;
-        postNotes(track.notes).then(response => setNotes(response));
-      }
-    };
-  };
-
   document.body.onkeydown = onKeyDown;
   document.body.onkeyup = onKeyUp;
 
@@ -64,13 +42,8 @@ function App() {
         <br/>
         <div className="ButtonPanel">
           <AudioPlayer />
-          <Button onClick={() => save()}>
-            Save
-          </Button>
-          <Button onClick={() => document.getElementById("upload_input")?.click()}>
-            <input id="upload_input" type="file" onChange={load} accept=".json"/>
-            Load
-          </Button>
+          <SaveButton notes={notes} />
+          <LoadButton setNotes={setNotes} />
         </div>
         <NotePanel
           keysPressed={keysPressed}
