@@ -19,15 +19,15 @@ export interface Note {
 export interface NotePanelProps {
   keysPressed: String[]
   notes: Note[]
+  timeSnap: number
   setNotes(notes: Note[]): void
 }
 
-const NotePanel = ({keysPressed, notes, setNotes}: NotePanelProps) => {
+const NotePanel = ({keysPressed, notes, timeSnap, setNotes}: NotePanelProps) => {
   const id = "notePanel";
   const xFactor = 40;
   const yFactor = 10;
   const yOffset = 880;
-  const timeSnap = 0.5;
   const notePanel = document.getElementById(id);
   const offsetLeft = notePanel?.offsetLeft ?? 0;
   const offsetTop = notePanel?.offsetTop ?? 0;
@@ -53,7 +53,7 @@ const NotePanel = ({keysPressed, notes, setNotes}: NotePanelProps) => {
     rootElement?.addEventListener("contextmenu", handleContextMenu);
 
     getNotes().then(response => setNotes(response));
-  }, []);
+  }, [setNotes]);
 
   const onMouseMove = (event: any) => {
     setMouseX(event.clientX);
@@ -152,7 +152,7 @@ const NotePanel = ({keysPressed, notes, setNotes}: NotePanelProps) => {
     };
 
     const pasteNotes = () => {
-      if (clipboardNotes.length == 0) {
+      if (clipboardNotes.length === 0) {
         return;
       }
       const timeOffset = clipboardNotes.map(note => note.startBeat).reduce((beat1, beat2) => Math.min(beat1, beat2));
@@ -193,7 +193,7 @@ const NotePanel = ({keysPressed, notes, setNotes}: NotePanelProps) => {
       setIsCopying(false);
       setIsPasting(false);
     }
-  }, [keysPressed, clipboardNotes, selectedNotes, notes]);
+  }, [keysPressed, clipboardNotes, selectedNotes, notes, setNotes, isCopying, isPasting]);
 
   const getBeatNumber = (posX: number) => {
     return timeSnap * Math.floor(posX / (xFactor * timeSnap));

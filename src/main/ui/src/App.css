@@ -86,6 +86,13 @@
   column-gap: 10%;
 }
 
+.SmallLabel {
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 7px;
+  /* text-align: middle; */
+}
+
 input[type="file"] {
   display: none;
 }

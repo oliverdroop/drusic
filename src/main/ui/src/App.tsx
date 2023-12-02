@@ -4,6 +4,7 @@ import AudioPlayer from './components/AudioPlayer';
 import { useState } from 'react';
 import LoadButton from './components/LoadButton';
 import SaveButton from './components/SaveButton';
+import TimeSnapSlider from './components/TimeSnapSlider';
 
 export interface Track {
   notes: Note[]
@@ -12,6 +13,7 @@ export interface Track {
 function App() {
   const [keysPressed, setKeysPressed] = useState([] as string[]);
   const [notes, setNotes] = useState([] as Note[]);
+  const [timeSnap, setTimeSnap] = useState(0.5);
 
   const onKeyDown = (event: any) => {
     const newKeysPressed = keysPressed.slice();
@@ -44,10 +46,12 @@ function App() {
           <AudioPlayer />
           <SaveButton notes={notes} />
           <LoadButton setNotes={setNotes} />
+          <TimeSnapSlider timeSnap={timeSnap} setTimeSnap={setTimeSnap}/>
         </div>
         <NotePanel
           keysPressed={keysPressed}
           notes={notes}
+          timeSnap={timeSnap}
           setNotes={setNotes}
         />
       </header>
