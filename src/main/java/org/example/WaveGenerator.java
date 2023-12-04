@@ -1,33 +1,25 @@
 package org.example;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
 
 public class WaveGenerator {
 
     private static float[] generateSamples(Note note, double bpm, double sampleRate) {
         return generateSamples(note.getEndBeat() - note.getStartBeat(), bpm, sampleRate, note.getPitch().freq(),
-                note.getAmplitude(), note.getWaveform());
+                note.getAmplitude(), note.getInstrument());
     }
 
-    private static float[] generateSamples(double beats, double bpm, double sampleRate, double frequency, double amplitude, Waveform waveform) {
-        return generateSamplesModulatingWaveform(beats, bpm, sampleRate, frequency, amplitude, waveform, Waveform.SINE);
-    }
-
-
-    private static float[] generateSamplesModulatingWaveform(double beats, double bpm, double sampleRate, double frequency, double amplitude, Waveform waveform1, Waveform waveform2) {
+    private static float[] generateSamples(double beats, double bpm, double sampleRate, double frequency, double amplitude, Instrument instrument) {
         double seconds = (beats / bpm) * 60;
 
         int sampleCount = (int)Math.floor(seconds * sampleRate);
         float[] buffer = new float[sampleCount];
         double freqFactor = frequency * Math.PI * 2;
 
-        for (int sample = 0; sample < buffer.length; sample++) {
-            double time = sample / sampleRate;
-            float wave1Value = (float)(((1 - (sample / (double) buffer.length)) * amplitude) * waveform1.calculate(freqFactor * time));
-            float wave2Value = (float)(((sample / (double) buffer.length) * amplitude) * waveform2.calculate(freqFactor * time));
-            buffer[sample] = wave1Value + wave2Value;
+        for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+            double time = sampleIndex / sampleRate;
+            buffer[sampleIndex] = (float) (amplitude * instrument.calculate(freqFactor * time, freqFactor * seconds));
         }
         return buffer;
     }

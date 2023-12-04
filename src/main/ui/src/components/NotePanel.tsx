@@ -13,17 +13,18 @@ export interface Note {
   endBeat: number
   pitch: Pitch
   amplitude: number
-  waveform: string
+  instrument: string
 }
 
 export interface NotePanelProps {
   keysPressed: String[]
   notes: Note[]
   timeSnap: number
+  instrument: string
   setNotes(notes: Note[]): void
 }
 
-const NotePanel = ({keysPressed, notes, timeSnap, setNotes}: NotePanelProps) => {
+const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePanelProps) => {
   const id = "notePanel";
   const xFactor = 40;
   const yFactor = 10;
@@ -108,7 +109,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, setNotes}: NotePanelProps) => 
         endBeat: endBeat,
         amplitude: 0.5,
         pitch: { number: pitchNumber } as Pitch,
-        waveform: "SQUARE"}
+        instrument: instrument}
       postNote(newNote).then(response => setNotes(response));
       setSelectedNotes([]);
     } else {
@@ -140,7 +141,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, setNotes}: NotePanelProps) => 
           && oldNote.pitch.number === newNote.pitch.number
           && oldNote.startBeat === newNote.startBeat
           && oldNote.endBeat === newNote.endBeat
-          && oldNote.waveform === newNote.waveform
+          && oldNote.instrument === newNote.instrument
         )
       )
     );
@@ -168,7 +169,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, setNotes}: NotePanelProps) => 
             frequency: 440
           },
           amplitude: note.amplitude,
-          waveform: note.waveform
+          instrument: note.instrument
         } as Note;
         existingNotes.push(newNote);
         clipboardNotesCopy.push(newNote);

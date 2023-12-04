@@ -30,26 +30,4 @@ public class NoteService {
     public void removeNotes(List<Note> notesToRemove) {
         notes.removeAll(notesToRemove);
     }
-
-//    @PostConstruct
-    private void createSampleNotes() {
-        final double amplitude = 0.5;
-
-        addNote(new Note(0, 4, AN_4, amplitude, Waveform.SINE));
-        addNote(new Note(1, 4, CS_5, amplitude, Waveform.TRIANGLE));
-        addNote(new Note(2, 4, EN_5, amplitude, Waveform.SQUARE));
-
-        addNote(new Note(4, 4.5, AN_3, amplitude, Waveform.SINE));
-        addNote(new Note(4.5, 5, BN_3, amplitude, Waveform.SINE));
-        addNote(new Note(5, 5.5, CS_4, amplitude, Waveform.SINE));
-        addNote(new Note(5.5, 6, DN_4, amplitude, Waveform.SINE));
-        addNote(new Note(6, 6.5, EN_4, amplitude, Waveform.SINE));
-        addNote(new Note(6.5, 7, FS_4, amplitude, Waveform.SINE));
-        addNote(new Note(7, 7.5, GS_4, amplitude, Waveform.SINE));
-        addNote(new Note(7.5, 8, AN_4, amplitude, Waveform.SINE));
-
-        addNote(new Note(9, 10, AN_4, amplitude, Waveform.SINE));
-        addNote(new Note(9, 10, CS_4, amplitude, Waveform.SINE));
-        addNote(new Note(9, 10, EN_4, amplitude, Waveform.SINE));
-    }
 }

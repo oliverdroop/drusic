@@ -93,6 +93,19 @@
   /* text-align: middle; */
 }
 
+.Dropdown {
+  z-index: 2;
+  background-color: #444444;
+  display: block;
+}
+
+.DropdownItem {
+  font-size: 12px;
+  background-color: #444444;
+  color: #FFFFFF;
+  display: table-row;
+}
+
 input[type="file"] {
   display: none;
 }
