@@ -5,7 +5,7 @@ interface InstrumentSelectorProps {
   setInstrument(instrument: string): void
 }
 
-const Instruments = ["SQUARE_TO_SINE", "TRIANGLE_TO_SINE", "RHODES"];
+const Instruments = ["SQUARE_TO_SINE", "TRIANGLE_TO_SINE", "RHODES", "KOTO"];
 
 function InstrumentSelector({setInstrument}: InstrumentSelectorProps) {
   const [showDropdownItems, setShowDropdownItems] = useState(false);

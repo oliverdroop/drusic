@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
 public enum Instrument {
 
@@ -14,7 +15,15 @@ public enum Instrument {
     }),
     RHODES((time, length) -> {
         double volumeFactor = 1 - Math.pow(time / length, 2);
-        return ((Waveform.SINE.calculate(time)) + (Waveform.SINE.calculate(time / 2))) * volumeFactor;
+        return ((Waveform.SINE.calculate(time) / 3)
+                + (Waveform.SINE.calculate(time / 2) / 3)
+                + (Waveform.SINE.calculate(time / 3) / 3))
+                * volumeFactor;
+    }),
+    KOTO((time, length) -> {
+        double volumeFactor = 1 - Math.pow(time / length, 2);
+        int harmonics = 15;
+        return IntStream.range(1, harmonics).mapToDouble(harmonicIndex -> Waveform.SINE.calculate(time * harmonicIndex)).sum() * volumeFactor;
     });
 
     private final BiFunction<Double, Double, Double> sampleCalculator;
