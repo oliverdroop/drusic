@@ -21,12 +21,12 @@ export interface NotePanelProps {
   notes: Note[]
   timeSnap: number
   instrument: string
+  zoomX: number
   setNotes(notes: Note[]): void
 }
 
-const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePanelProps) => {
+const NotePanel = ({keysPressed, notes, timeSnap, instrument, zoomX, setNotes}: NotePanelProps) => {
   const id = "notePanel";
-  const xFactor = 40;
   const yFactor = 10;
   const yOffset = 880;
   const notePanel = document.getElementById(id);
@@ -197,16 +197,16 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePan
   }, [keysPressed, clipboardNotes, selectedNotes, notes, setNotes, isCopying, isPasting]);
 
   const getBeatNumber = (posX: number) => {
-    return timeSnap * Math.floor(posX / (xFactor * timeSnap));
+    return timeSnap * Math.floor(posX / (zoomX * timeSnap));
   };
 
   const getXForBeat = (beat: number) => {
-    return beat * xFactor;
+    return beat * zoomX;
   };
 
   const calculateTimeChange = () => {
     const diffX = mouseX - mouseDownX;
-    return timeSnap * Math.round(diffX / (xFactor * timeSnap));
+    return timeSnap * Math.round(diffX / (zoomX * timeSnap));
   };
 
   const getPitchNumber = (posY: number) => {
@@ -247,7 +247,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePan
         <NoteDiv 
           key={`note_${i}`}
           note={note}
-          xFactor={xFactor}
+          xFactor={zoomX}
           yFactor={yFactor}
           yOffset={yOffset}
           index={i}
@@ -257,7 +257,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePan
         />
       )}
       
-      <NoteSnapGrid getPitchNumber={getPitchNumber}/>
+      <NoteSnapGrid zoomX={zoomX} getPitchNumber={getPitchNumber}/>
 
       {/* Show the change for grabbed note(s) while the mouse is clicked */}
       {grabbedNotes.length > 0 && mouseDownButton === 0 && (
@@ -267,9 +267,9 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePan
             key={`drag_box_${i}`}
             style={{
               top: `${yOffset - ((grabbedNote.pitch.number + calculatePitchChange()) * yFactor)}px`,
-              left: `${(grabbedNote.startBeat + (isResizeNote ? 0 : calculateTimeChange())) * xFactor}px`,
+              left: `${(grabbedNote.startBeat + (isResizeNote ? 0 : calculateTimeChange())) * zoomX}px`,
               height: `${yFactor}px`,
-              width: `${(grabbedNote.endBeat - grabbedNote.startBeat - (isResizeNote ? -calculateTimeChange() : 0)) * xFactor}px`
+              width: `${(grabbedNote.endBeat - grabbedNote.startBeat - (isResizeNote ? -calculateTimeChange() : 0)) * zoomX}px`
             }}
           />
         )
@@ -296,7 +296,7 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, setNotes}: NotePan
                 top: `${yOffset - getYForPitch(getPitchNumber(mouseDownY - offsetTop))}px`,
                 left: `${getXForBeat(getBeatNumber(mouseDownX - offsetLeft))}px`,
                 height: `${yFactor}px`,
-                width: `${calculateTimeChange() * xFactor}px`
+                width: `${calculateTimeChange() * zoomX}px`
               }}
             />
           )}

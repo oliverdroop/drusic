@@ -1,11 +1,11 @@
 
 export interface NoteSnapGridProps {
+  zoomX: number
   getPitchNumber(yPos: number): number
 }
 
-const NoteSnapGrid = ({getPitchNumber}: NoteSnapGridProps) => {
+const NoteSnapGrid = ({zoomX, getPitchNumber}: NoteSnapGridProps) => {
   const id = "notePanel";
-  const xFactor = 40;
   const yFactor = 10;
 
   const getIntegers = (max: number) => {
@@ -31,8 +31,8 @@ const NoteSnapGrid = ({getPitchNumber}: NoteSnapGridProps) => {
   };
 
   const getVerticalLinePositions = () => {
-    const count = (document.getElementById(id)?.clientWidth ?? 0) / xFactor;
-    return getIntegers(count).map(num => num * xFactor);
+    const count = (document.getElementById(id)?.clientWidth ?? 0) / zoomX;
+    return getIntegers(count).map(num => num * zoomX);
   };
 
   return (
