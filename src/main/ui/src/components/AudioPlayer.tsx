@@ -1,7 +1,11 @@
-const AudioPlayer = () => {
+interface AudioPlayerProps{
+  bpm: number;
+}
+
+const AudioPlayer = ({bpm}: AudioPlayerProps) => {
 
   const play = () => {
-    const audio = new Audio("http://localhost:8080/playAll/" + Date.now());
+    const audio = new Audio(`http://localhost:8080/playAll/${Date.now()}/${bpm}`);
     audio.volume = 0.1;
     audio.play();
   };

@@ -47,13 +47,23 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, zoomX, setNotes}: 
 
 
   useEffect(() => {
+    const rootElement = document.getElementById(id);
+
     const handleContextMenu = (event: any) => {
       event.preventDefault();
     };
-    const rootElement = document.getElementById(id);
+
+    const handleScroll = () => {
+      console.log(rootElement?.scrollLeft);
+    };
+    
     rootElement?.addEventListener("contextmenu", handleContextMenu);
+    rootElement?.addEventListener("scroll", handleScroll, {passive: true});
 
     getNotes().then(response => setNotes(response));
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [setNotes]);
 
   const onMouseMove = (event: any) => {
@@ -223,7 +233,10 @@ const NotePanel = ({keysPressed, notes, timeSnap, instrument, zoomX, setNotes}: 
   };
 
   const isCreatingNewNote = () => {
-    return mouseDownButton === 0 && selectedNotes.length === 0 && calculatePitchChange() === 0 && calculateTimeChange() >= 0;
+    return mouseDownButton === 0
+      && selectedNotes.length === 0
+      && Math.abs(calculatePitchChange()) <= 1
+      && calculateTimeChange() >= 0;
   };
 
   const grabNote = (note: Note) => {

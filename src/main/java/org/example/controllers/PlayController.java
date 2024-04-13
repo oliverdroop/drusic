@@ -14,6 +14,7 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
+import javax.websocket.server.PathParam;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class PlayController {
     private final NoteService noteService;
 
     private final double sampleRate = 44100.0;
-    private final double bpm = 106;
+//    private final double bpm = 106;
     private final boolean bigEndian = false;
     private final boolean signed = true;
     private final int bits = 16;
@@ -32,8 +33,8 @@ public class PlayController {
     private AudioFormat format = new AudioFormat((float)sampleRate, bits, channels, signed, bigEndian);
 
     @CrossOrigin(value = "http://localhost:3000")
-    @GetMapping(value = "/playAll/{timeMillis}")
-    public ResponseEntity<StreamingResponseBody> playAll(@PathVariable String timeMillis) throws LineUnavailableException, IOException {
+    @GetMapping(value = "/playAll/{timeMillis}/{bpm}")
+    public ResponseEntity<StreamingResponseBody> playAll(@PathVariable String timeMillis, @PathVariable int bpm) throws LineUnavailableException, IOException {
         System.out.printf("Handling playAll with timestamp %s\n", timeMillis);
         byte[] byteBuffer = WaveGenerator.convertNotesToBytes(noteService.getNotes(), bpm, sampleRate, bits);
 

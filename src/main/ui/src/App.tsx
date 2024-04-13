@@ -7,6 +7,7 @@ import SaveButton from './components/SaveButton';
 import TimeSnapSlider from './components/TimeSnapSlider';
 import InstrumentSelector from './components/InstrumentSelector';
 import ZoomXSlider from './components/ZoomXSlider';
+import BpmController from './components/BpmController';
 
 export interface Track {
   notes: Note[]
@@ -18,6 +19,7 @@ function App() {
   const [timeSnap, setTimeSnap] = useState(0.5);
   const [instrument, setInstrument] = useState("SQUARE_TO_SINE");
   const [zoomX, setZoomX] = useState(40);
+  const [bpm, setBpm] = useState(106);
 
   const onKeyDown = (event: any) => {
     const newKeysPressed = keysPressed.slice();
@@ -47,12 +49,13 @@ function App() {
         Drusic - {keysPressed}
         <br/>
         <div className="ButtonPanel">
-          <AudioPlayer />
+          <AudioPlayer bpm={bpm}/>
           <SaveButton notes={notes} />
           <LoadButton setNotes={setNotes} />
           <TimeSnapSlider timeSnap={timeSnap} setTimeSnap={setTimeSnap} />
           <ZoomXSlider zoomX={zoomX} setZoomX={setZoomX} />
           <InstrumentSelector setInstrument={setInstrument} />
+          <BpmController bpm={bpm} setBpm={setBpm} />
         </div>
         <NotePanel
           keysPressed={keysPressed}
